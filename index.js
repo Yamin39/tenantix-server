@@ -30,8 +30,20 @@ async function run() {
 
     // get rooms
     app.get("/rooms", async (req, res) => {
-      const result = await roomsCollection.find().toArray();
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      const result = await roomsCollection
+        .find()
+        .skip(page * size)
+        .limit(size)
+        .toArray();
       res.send(result);
+    });
+
+    // get rooms count
+    app.get("/roomsCount", async (req, res) => {
+      const count = await roomsCollection.estimatedDocumentCount();
+      res.send({ count });
     });
 
     // get coupons
