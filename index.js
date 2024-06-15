@@ -26,10 +26,17 @@ async function run() {
     await client.connect();
 
     const roomsCollection = client.db("tenantixDB").collection("rooms");
+    const couponsCollection = client.db("tenantixDB").collection("coupons");
 
     // get rooms
     app.get("/rooms", async (req, res) => {
       const result = await roomsCollection.find().toArray();
+      res.send(result);
+    });
+
+    // get coupons
+    app.get("/coupons", async (req, res) => {
+      const result = await couponsCollection.find().toArray();
       res.send(result);
     });
 
