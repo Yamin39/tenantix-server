@@ -27,6 +27,7 @@ async function run() {
 
     const roomsCollection = client.db("tenantixDB").collection("rooms");
     const couponsCollection = client.db("tenantixDB").collection("coupons");
+    const usersCollection = client.db("tenantixDB").collection("users");
 
     // get rooms
     app.get("/rooms", async (req, res) => {
@@ -49,6 +50,18 @@ async function run() {
     // get coupons
     app.get("/coupons", async (req, res) => {
       const result = await couponsCollection.find().toArray();
+      res.send(result);
+    });
+
+    // save users
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const isExist = await usersCollection.findOne({ email: user.email });
+      if (isExist) {
+        res.send({ message: "User already exist", insertedId: null });
+        return;
+      }
+      const result = await usersCollection.insertOne(user);
       res.send(result);
     });
 
