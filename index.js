@@ -66,6 +66,19 @@ async function run() {
       res.send(result);
     });
 
+    // get agreements
+    app.get("/agreements", async (req, res) => {
+      const email = req.query?.email;
+
+      if (email) {
+        const isRequested = await agreementsCollection.findOne({ user_email: email });
+        return res.send({ isRequested: !!isRequested });
+      }
+
+      const result = await agreementsCollection.find().toArray();
+      res.send(result);
+    });
+
     // save agreements
     app.post("/agreements", async (req, res) => {
       const result = await agreementsCollection.insertOne(req.body);
