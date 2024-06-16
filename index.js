@@ -28,6 +28,7 @@ async function run() {
     const roomsCollection = client.db("tenantixDB").collection("rooms");
     const couponsCollection = client.db("tenantixDB").collection("coupons");
     const usersCollection = client.db("tenantixDB").collection("users");
+    const agreementsCollection = client.db("tenantixDB").collection("agreements");
 
     // get rooms
     app.get("/rooms", async (req, res) => {
@@ -62,6 +63,12 @@ async function run() {
         return;
       }
       const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+
+    // save agreements
+    app.post("/agreements", async (req, res) => {
+      const result = await agreementsCollection.insertOne(req.body);
       res.send(result);
     });
 
