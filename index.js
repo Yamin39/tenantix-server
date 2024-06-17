@@ -1,6 +1,7 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
 const app = express();
+const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -8,6 +9,23 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
+const verifyToken = (req, res, next) => {
+  console.log("in verify token", req.headers?.authorization);
+
+  if (!req.headers?.authorization) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+
+  const token = req.headers?.authorization?.split(" ")[1];
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6fu63x8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -29,6 +47,15 @@ async function run() {
     const couponsCollection = client.db("tenantixDB").collection("coupons");
     const usersCollection = client.db("tenantixDB").collection("users");
     const agreementsCollection = client.db("tenantixDB").collection("agreements");
+
+    // auth apis
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "10d",
+      });
+      res.send({ token });
+    });
 
     // get rooms
     app.get("/rooms", async (req, res) => {
@@ -67,7 +94,7 @@ async function run() {
     });
 
     // get agreements
-    app.get("/agreements", async (req, res) => {
+    app.get("/agreements", verifyToken, async (req, res) => {
       const email = req.query?.email;
 
       if (email) {
