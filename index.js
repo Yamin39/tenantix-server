@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
@@ -26,6 +26,8 @@ const verifyToken = (req, res, next) => {
     next();
   });
 };
+
+// const uri = 'mongodb://localhost:27017'
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6fu63x8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -73,6 +75,18 @@ async function run() {
     app.get("/roomsCount", async (req, res) => {
       const count = await roomsCollection.estimatedDocumentCount();
       res.send({ count });
+    });
+
+    // update availability of a room
+    app.patch("/rooms/:id", async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const updatedDoc = {
+        $set: {
+          availability: req.body.availability,
+        },
+      };
+      const result = await roomsCollection.updateOne(filter, updatedDoc);
+      res.send(result);
     });
 
     // get coupons
