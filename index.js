@@ -165,6 +165,27 @@ async function run() {
       res.send(result);
     });
 
+    // get admin stats
+    app.get("/admin-stats", verifyToken, verifyAdmin, async (req, res) => {
+      const total_rooms = await roomsCollection.estimatedDocumentCount();
+      const total_users = await usersCollection.countDocuments({ role: "user" });
+      const total_members = await usersCollection.countDocuments({ role: "member" });
+
+      const available_rooms = await roomsCollection.countDocuments({ availability: true });
+      const percentageOfAvailable_rooms = ((available_rooms / total_rooms) * 100).toFixed(2);
+
+      const unavailable_rooms = await roomsCollection.countDocuments({ availability: false });
+      const percentageOfUnavailable_rooms = ((unavailable_rooms / total_rooms) * 100).toFixed(2);
+
+      res.send({
+        total_rooms,
+        total_users,
+        total_members,
+        percentageOfAvailable_rooms: Number(percentageOfAvailable_rooms),
+        percentageOfUnavailable_rooms: Number(percentageOfUnavailable_rooms),
+      });
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
