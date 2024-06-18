@@ -81,6 +81,20 @@ async function run() {
       res.send(result);
     });
 
+    // get user
+    app.get("/users/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+
+      if (email !== req.decoded.email) {
+        res.status(403).send({ message: "Forbidden" });
+      }
+
+      const query = { email };
+      const result = await usersCollection.findOne(query);
+
+      res.send(result);
+    });
+
     // save users
     app.post("/users", async (req, res) => {
       const user = req.body;
