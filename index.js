@@ -50,6 +50,20 @@ async function run() {
     const usersCollection = client.db("tenantixDB").collection("users");
     const agreementsCollection = client.db("tenantixDB").collection("agreements");
 
+    // custom middleware to verify admin
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded?.email;
+      const user = await usersCollection.findOne({ email });
+
+      const isAdmin = user?.role === "admin";
+
+      if (!isAdmin) {
+        return res.status(403).send({ message: "Forbidden" });
+      }
+
+      next();
+    };
+
     // auth apis
     app.post("/jwt", async (req, res) => {
       const user = req.body;
