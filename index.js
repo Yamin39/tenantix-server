@@ -111,13 +111,24 @@ async function run() {
     app.get("/agreements", verifyToken, async (req, res) => {
       const email = req.query?.email;
 
+      // get specific agreement
       if (email) {
-        const isRequested = await agreementsCollection.findOne({ user_email: email });
-        return res.send({ isRequested: !!isRequested });
+        const result = await agreementsCollection.findOne({ user_email: email });
+        return res.send(result);
       }
 
       const result = await agreementsCollection.find().toArray();
       res.send(result);
+    });
+
+    // get specific agreement by status
+    app.get("/agreements/:email/:status", async (req, res) => {
+      const query = {
+        user_email: req.params?.email,
+        status: req.params?.status,
+      };
+      const result = await agreementsCollection.findOne(query);
+      res.send(result ? result : {});
     });
 
     // save agreements
