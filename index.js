@@ -142,6 +142,18 @@ async function run() {
       res.send(result);
     });
 
+    // update user role
+    app.patch("/users/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const updatedDoc = {
+        $set: {
+          role: req.body.role,
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
     // get agreements
     app.get("/agreements", verifyToken, async (req, res) => {
       const email = req.query?.email;
