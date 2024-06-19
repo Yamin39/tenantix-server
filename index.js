@@ -123,6 +123,13 @@ async function run() {
       res.send(result);
     });
 
+    // get members
+    app.get("/members", verifyToken, verifyAdmin, async (req, res) => {
+      const query = { role: "member" };
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // save users
     app.post("/users", async (req, res) => {
       const user = req.body;
