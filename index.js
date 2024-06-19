@@ -110,6 +110,12 @@ async function run() {
       res.send(result);
     });
 
+    // post coupons
+    app.post("/coupons", verifyToken, verifyAdmin, async (req, res) => {
+      const result = await couponsCollection.insertOne(req.body);
+      res.send(result);
+    });
+
     // update availability of a coupon
     app.patch("/coupons/:id", verifyToken, verifyAdmin, async (req, res) => {
       const filter = { _id: new ObjectId(req.params.id) };
