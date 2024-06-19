@@ -185,6 +185,12 @@ async function run() {
       res.send(result);
     });
 
+    // get announcements
+    app.get("/announcements", async (req, res) => {
+      const result = await announcementsCollection.find().toArray();
+      res.send(result);
+    });
+
     // save announcements
     app.post("/announcements", async (req, res) => {
       const result = await announcementsCollection.insertOne(req.body);
