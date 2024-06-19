@@ -110,6 +110,18 @@ async function run() {
       res.send(result);
     });
 
+    // update availability of a coupon
+    app.patch("/coupons/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const updatedDoc = {
+        $set: {
+          availability: req.body.availability,
+        },
+      };
+      const result = await couponsCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
     // get user
     app.get("/users/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
