@@ -49,6 +49,7 @@ async function run() {
     const couponsCollection = client.db("tenantixDB").collection("coupons");
     const usersCollection = client.db("tenantixDB").collection("users");
     const agreementsCollection = client.db("tenantixDB").collection("agreements");
+    const announcementsCollection = client.db("tenantixDB").collection("announcements");
 
     // custom middleware to verify admin
     const verifyAdmin = async (req, res, next) => {
@@ -181,6 +182,12 @@ async function run() {
     // save agreements
     app.post("/agreements", async (req, res) => {
       const result = await agreementsCollection.insertOne(req.body);
+      res.send(result);
+    });
+
+    // save announcements
+    app.post("/announcements", async (req, res) => {
+      const result = await announcementsCollection.insertOne(req.body);
       res.send(result);
     });
 
