@@ -203,6 +203,19 @@ async function run() {
       res.send(result);
     });
 
+    // accept agreement
+    app.patch("/accept-agreement/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const updatedDoc = {
+        $set: {
+          status: req.body.status,
+          accepted_date: new Date(),
+        },
+      };
+      const result = await agreementsCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
     // get announcements
     app.get("/announcements", async (req, res) => {
       const result = await announcementsCollection.find().toArray();
