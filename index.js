@@ -176,10 +176,18 @@ async function run() {
     // get agreements
     app.get("/agreements", verifyToken, async (req, res) => {
       const email = req.query?.email;
+      const status = req.query?.status;
+      console.log(email, status);
 
-      // get specific agreement
+      // get specific agreement by user
       if (email) {
         const result = await agreementsCollection.findOne({ user_email: email });
+        return res.send(result);
+      }
+
+      // get specific agreement by status
+      if (status) {
+        const result = await agreementsCollection.find({ status }).toArray();
         return res.send(result);
       }
 
