@@ -162,8 +162,8 @@ async function run() {
     });
 
     // update user role
-    app.patch("/users/:id", verifyToken, verifyAdmin, async (req, res) => {
-      const filter = { _id: new ObjectId(req.params.id) };
+    app.patch("/users/:email", verifyToken, verifyAdmin, async (req, res) => {
+      const filter = { email: req.params.email };
       const updatedDoc = {
         $set: {
           role: req.body.role,
@@ -187,7 +187,7 @@ async function run() {
       res.send(result);
     });
 
-    // get specific agreement by status
+    // get specific agreement by status of a user
     app.get("/agreements/:email/:status", async (req, res) => {
       const query = {
         user_email: req.params?.email,
