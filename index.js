@@ -283,6 +283,25 @@ async function run() {
       res.send(result);
     });
 
+    // get payment history
+    app.get("/payments/:email/:search", verifyToken, async (req, res) => {
+      const email = req.params?.email;
+      const search = req.params?.search;
+
+      const query = { member_email: email };
+
+      if (search !== "null") {
+        query.paid_month = {
+          $regex: search,
+          $options: "i",
+        };
+      }
+
+      const result = await paymentsCollection.find(query).toArray();
+
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
