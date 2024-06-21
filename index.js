@@ -51,6 +51,7 @@ async function run() {
     const usersCollection = client.db("tenantixDB").collection("users");
     const agreementsCollection = client.db("tenantixDB").collection("agreements");
     const announcementsCollection = client.db("tenantixDB").collection("announcements");
+    const paymentsCollection = client.db("tenantixDB").collection("payments");
 
     // custom middleware to verify admin
     const verifyAdmin = async (req, res, next) => {
@@ -262,7 +263,6 @@ async function run() {
     app.post("/create-payment-intent", async (req, res) => {
       const { price } = req.body;
       const amount = parseInt(price * 100);
-      console.log(amount);
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
@@ -273,6 +273,12 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    });
+
+    // save payments
+    app.post("/payments", async (req, res) => {
+      const result = await paymentsCollection.insertOne(req.body);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
