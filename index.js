@@ -131,13 +131,8 @@ async function run() {
     });
 
     // get user
-    app.get("/users/:email", verifyToken, async (req, res) => {
+    app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
-
-      if (email !== req.decoded.email) {
-        res.status(403).send({ message: "Forbidden" });
-      }
-
       const query = { email };
       const result = await usersCollection.findOne(query);
 
