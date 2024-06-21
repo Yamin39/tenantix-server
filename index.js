@@ -130,6 +130,13 @@ async function run() {
       res.send(result);
     });
 
+    // delete a coupon
+    app.delete("/coupons/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const result = await couponsCollection.deleteOne(filter);
+      res.send(result);
+    });
+
     // get user
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
