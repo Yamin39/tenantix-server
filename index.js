@@ -209,6 +209,37 @@ async function run() {
       res.send(result ? result : {});
     });
 
+    // get specific agreement for PaymentHistory
+    app.get("/agreements-for-PaymentHistory/:email", async (req, res) => {
+      const query = {
+        user_email: req.params?.email,
+        status: "checked",
+        isRejected: false,
+      };
+      const result = await agreementsCollection.findOne(query);
+      res.send(result ? result : {});
+    });
+
+    // get specific agreement for isRequested
+    app.get("/isRequested/:email", async (req, res) => {
+      const query = {
+        user_email: req.params?.email,
+        isRejected: false,
+      };
+      const result = await agreementsCollection.findOne(query);
+      res.send(result);
+    });
+
+    // get specific agreements to removeMember
+    app.get("/agreements-to-removeMember", async (req, res) => {
+      const query = {
+        status: "checked",
+        isRejected: false,
+      };
+      const result = await agreementsCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // save agreements
     app.post("/agreements", async (req, res) => {
       const result = await agreementsCollection.insertOne(req.body);
@@ -222,6 +253,20 @@ async function run() {
         $set: {
           status: req.body.status,
           accepted_date: new Date(),
+        },
+      };
+      const result = await agreementsCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    // reject agreement
+    app.patch("/reject-agreement/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const updatedDoc = {
+        $set: {
+          status: req.body.status,
+          rejected_date: new Date(),
+          isRejected: true,
         },
       };
       const result = await agreementsCollection.updateOne(filter, updatedDoc);
