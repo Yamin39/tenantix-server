@@ -189,7 +189,7 @@ async function run() {
         return res.send(result);
       }
 
-      // get specific agreement by status
+      // get specific agreement by status of all users
       if (status) {
         const result = await agreementsCollection.find({ status }).toArray();
         return res.send(result);
@@ -225,6 +225,13 @@ async function run() {
         },
       };
       const result = await agreementsCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    // delete agreement
+    app.delete("/agreements/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const result = await agreementsCollection.deleteOne(filter);
       res.send(result);
     });
 
